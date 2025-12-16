@@ -12,7 +12,7 @@ library("terra")
 
 library("prism")
 
-prism_set_dl_dir("../data/PRISM") # system-specific; this goes to a directory shared among projects
+prism_set_dl_dir("data") # system-specific; this goes to a directory shared among projects
 
 # set parameters as variables
 taxon <- 53405 # toyon!

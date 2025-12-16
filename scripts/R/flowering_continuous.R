@@ -1,5 +1,5 @@
 # Analyzing predicted historical flowering 
-# jby 2025.08.07
+# jby 2025.11.15
 
 # starting up ------------------------------------------------------------
 
@@ -169,7 +169,11 @@ ggplot(sumFlr, aes(x=delMnPrFlr, fill=usfs)) + geom_histogram(position="dodge") 
 quantile(sumFlr$delMnPrFlr, c(0.025, 0.5, 0.975)) # median 0.02; 95% CI -0.02, 0.08
 quantile(sumFlr$delMnPrFlr[sumFlr$usfs], c(0.025, 0.5, 0.975)) # median 0.02; 95% CI -0.03, 0.08
 quantile(sumFlr$delMnPrFlr[!sumFlr$usfs], c(0.025, 0.5, 0.975)) # median 0.03; 95% CI -0.02, 0.07
-wilcox.test(delMnPrFlr~usfs, data=sumFlr, alt="g") # false > true, p = 5.6e-09
+
+wilcox.test(sumFlr$delMnPrFlr, alt="g") # > 0, p < 2.2e-16
+wilcox.test(filter(sumFlr,usfs)$delMnPrFlr, alt="g") # > 0, p < 2.2e-16
+wilcox.test(filter(sumFlr,!usfs)$delMnPrFlr, alt="g") # > 0, p < 2.2e-16
+
 
 cor.test(~delMnPrFlr+lat, data=sumFlr, m="spearman")
 # cor = -0.22, p < 2.2e-16 --- bigger increase in PrFlr farther south?
@@ -232,7 +236,11 @@ ggplot(sumFlr, aes(x=delCVPrFlr, fill=usfs)) + geom_histogram(position="dodge") 
 quantile(sumFlr$delCVPrFlr, c(0.025, 0.5, 0.975)) # median 0.01; 95% CI -0.02, 0.05
 quantile(sumFlr$delCVPrFlr[sumFlr$usfs], c(0.025, 0.5, 0.975)) # median 0.01; 95% CI -0.01, 0.06
 quantile(sumFlr$delCVPrFlr[!sumFlr$usfs], c(0.025, 0.5, 0.975)) # median 0.005; 95% CI -0.02, 0.04
-wilcox.test(delCVPrFlr~usfs, data=sumFlr, alt="l") # false < true, p < 2.2e-16 HMM
+
+wilcox.test(sumFlr$delCVPrFlr, alt="g") # > 0, p < 2.2e-16
+wilcox.test(filter(sumFlr,usfs)$delCVPrFlr, alt="g") # > 0, p < 2.2e-16
+wilcox.test(filter(sumFlr,!usfs)$delCVPrFlr, alt="g") # > 0, p < 2.2e-16
+
 
 cor.test(~delCVPrFlr+lat, data=sumFlr, m="spearman")
 # cor = -0.10, p < 2.2e-16 --- much bigger increase farther south
@@ -795,32 +803,37 @@ plot_slice <- pred_flr_changes %>% group_by(timeframe, predictor) %>% slice_samp
 
 flr_change_summ <- pred_flr_changes %>% group_by(timeframe, predictor) %>% summarize(med_pred = median(pred_value), med_MnPrFlr = median(MnPrFlr)) %>% pivot_wider(names_from=timeframe, values_from=c(med_pred, med_MnPrFlr))
 
+predictor_mean_change$predclass <- "precip"
+predictor_mean_change$predclass[grepl("^T", predictor_mean_change$predictor)] <- "temp"
+predictor_mean_change$predclass[grepl("^VPD", predictor_mean_change$predictor)] <- "vpd"
+predictor_mean_change$predclass <- factor(predictor_mean_change$predclass, c("precip", "temp", "vpd"))
+table(predictor_mean_change$predclass)
 
 MnPredChange <- ggplot(predictor_mean_change, aes(x=mean_change, y=delMnPrFlr, color=predclass)) + 
 	geom_point(alpha=0.1) +
-	geom_smooth(method="lm", color="black", se=FALSE, linewidth=0.25) + 
+	geom_smooth(method="lm", color="black", se=FALSE, linewidth=2) + 
 	facet_wrap("predictor", nrow=2, scale="free_x") +
 	scale_color_manual(values = c("#a6cee3", "#fdbf6f", "#cab2d6")) + 
 	labs(x="Change in predictor, 1991-2020 vs 1901-1930", y="Change in flowering intensity") +
-	theme_bw(base_size=18) +
+	theme_bw(base_size=108) +
 	theme(legend.position="none")
 
-MnPredChange
+# MnPredChange
 
 CVPredChange <- ggplot(predictor_mean_change, aes(x=mean_change, y=delCVPrFlr, color=predclass)) + 
 	geom_point(alpha=0.1) +
-	geom_smooth(method="lm", color="black", se=FALSE, linewidth=0.25) + 
+	geom_smooth(method="lm", color="black", se=FALSE, linewidth=2) + 
 	facet_wrap("predictor", nrow=2, scale="free_x") +
 	scale_color_manual(values = c("#a6cee3", "#fdbf6f", "#cab2d6")) + 
 	labs(x="Change in predictor, 1991-2020 vs 1901-1930", y="Change in CV of flowering intensity") +
-	theme_bw(base_size=18) +
+	theme_bw(base_size=108) +
 	theme(legend.position="none")
 
 
 
-{png(paste0("output/figures/pred_flr_change_", taxon, ".png"), width=750, height=1000)
+{png(paste0("output/figures/pred_flr_change_", taxon, ".png"), width=4500, height=6000)
 
-ggdraw() + draw_plot(MnPredChange, 0, 0.5, 1, 0.5) + draw_plot(CVPredChange, 0, 0, 1, 0.5) + draw_plot_label(label=c("A", "B"), x=0, y=c(1, 0.5), size=24)
+ggdraw() + draw_plot(MnPredChange, 0, 0.5, 1, 0.5) + draw_plot(CVPredChange, 0, 0, 1, 0.5) + draw_plot_label(label=c("A", "B"), x=0, y=c(1, 0.5), size=108)
 
 }
 dev.off()

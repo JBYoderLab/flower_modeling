@@ -1,5 +1,5 @@
 # Using BARTs to model flowering activity as a continuous response
-# last used/modified jby, 2025.05.21
+# last used/modified jby, 2025.11.16
 
 rm(list=ls())  # Clears memory of all objects -- useful for debugging! But doesn't kill packages.
 
@@ -115,6 +115,8 @@ topXvars <- c("tmin.y1q3", "ppt.y0q1", "ppt.y1q4", "tmin.y1q4", "ppt.y1q3", "vpd
 # fit a model with top-candidate predictors
 
 flrDARTtop <- softbart_regression(paste("prop_flr ~", paste(topXvars, collapse="+")), data=flow, test_data=flow, num_tree=50, k=2, opts=Opts(num_burn=4000, num_save=1000, num_thin=100)) # this may be slow
+
+
 
 plot(flrDARTtop$sigma_mu) # examine MCMC sampling
 
