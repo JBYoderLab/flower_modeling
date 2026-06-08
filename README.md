@@ -16,7 +16,7 @@ The full analysis, from modeling to predicting flowering activity from historic 
 
 The name TARDIS was published for the first time with our demonstration of a version using continuous-response modeling, in
 
-> Dakduk D* and JB Yoder. 2026. Temporal analysis of reproduction distributed in space illuminates the climate-change resiliency of toyon (Heteromeles arbutifolia). *American Journal of Botany*. [doi.org/10.1002/ajb2.70182](https://doi.org/10.1002/ajb2.70182). Preprint on bioRxiv. [doi.org/10.1101/2025.09.09.675207](https://doi.org/10.1101/2025.09.09.675207).
+> Dakduk D and JB Yoder. 2026. Temporal analysis of reproduction distributed in space illuminates the climate-change resiliency of toyon (Heteromeles arbutifolia). *American Journal of Botany*. [doi.org/10.1002/ajb2.70182](https://doi.org/10.1002/ajb2.70182). Preprint on bioRxiv. [doi.org/10.1101/2025.09.09.675207](https://doi.org/10.1101/2025.09.09.675207).
 
 A standalone TARDIS package is forthcoming, thanks to new funding from the National Science Foundation. In the meantime, this repository is intended to hold the most current versions of code for all elements of the TARDIS pipeline.
 
