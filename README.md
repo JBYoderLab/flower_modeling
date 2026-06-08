@@ -1,20 +1,24 @@
-TARDIS: Temporal Analysis of Reproduction Distributed in Space
-==============================================================
+Modeling flowering activity from iNaturalist records
+====================================================
 
-Readme updated 2 Sep 2025. 
+Readme updated 8 June 2026.
 
+![A Joshua tree with, a conical cluster of white-green flowers on one branch and a cluster of green, golf-ball-sized fruits on another](protocol_manual/Joshua_tree_flowering_fruiting.jpeg "A Joshua tree bearing open flowers and mature fruit, in Walker Pass, California")
 
 Project description
 -------------------
 
-This repo contains code to (1) use the [iNaturalist](https://www.inaturalist.org) API to download species observations based on phenology annotations, by modifying code from the [`rinat`](https://cran.r-project.org/web/packages/rinat/index.html) package, and (2) model the relationship between flowering and weather using spatially interpolated records from [PRISM](https://prism.oregonstate.edu) and Bayesian additive regression tree methods implemented in [`dbarts`](https://cran.r-project.org/web/packages/dbarts) with utilities from [`embarcadero`](https://github.com/cjcarlson/embarcadero) (for a binary-response model of flowering), or using functions from [`softBart`](https://github.com/theodds/SoftBART) (for a continuous-response model).
+This repo contains code to (1) use the [iNaturalist](https://www.inaturalist.org) API to download species observations based on phenology annotations, with functions from the [`rinat`](https://cran.r-project.org/web/packages/rinat/index.html) package, and (2) model the relationship between flowering and weather using spatially interpolated records from [PRISM](https://prism.oregonstate.edu) and Bayesian additive regression tree methods implemented in [`dbarts`](https://cran.r-project.org/web/packages/dbarts) with utilities from [`embarcadero`](https://github.com/cjcarlson/embarcadero) (for a binary-response model of flowering), or using functions from [`softBart`](https://github.com/theodds/SoftBART) (for a continuous-response model).
 
 The full analysis, from modeling to predicting flowering activity from historic records ("hindcasting") to analyzing trends in predicted historical flowering activity, is "Temporal Analysis of Reproduction Distributed in Space", or TARDIS. This workflow was first demonstrated in the following paper, which should be cited in connection with TARDIS even though we hadn't come up with the clever acronym when it was published:
 
-> Yoder JB, AK Andrade*, LA DeFalco, TC Esque, CJ Carlson, DF Shryock, R Yeager, and CI Smith. 2024. Reconstructing 120 years of climate change impacts on Joshua tree flowering. *Ecology Letters*, 27, e14478. [doi.org/10.1111/ele.14478](https://doi.org/10.1111/ele.14478)
+> Yoder JB, AK Andrade, LA DeFalco, TC Esque, CJ Carlson, DF Shryock, R Yeager, and CI Smith. 2024. Reconstructing 120 years of climate change impacts on Joshua tree flowering. *Ecology Letters*, 27, e14478. [doi.org/10.1111/ele.14478](https://doi.org/10.1111/ele.14478).
 
+The name TARDIS was published for the first time with our demonstration of a version using continuous-response modeling, in
 
-![A Joshua tree with, a conical cluster of white-green flowers on one branch and a cluster of green, golf-ball-sized fruits on another](protocol_manual/Joshua_tree_flowering_fruiting.jpeg "A Joshua tree bearing open flowers and mature fruit, in Walker Pass, California")
+> Dakduk D* and JB Yoder. 2026. Temporal analysis of reproduction distributed in space illuminates the climate-change resiliency of toyon (Heteromeles arbutifolia). *American Journal of Botany*. [doi.org/10.1002/ajb2.70182](https://doi.org/10.1002/ajb2.70182). Preprint on bioRxiv. [doi.org/10.1101/2025.09.09.675207](https://doi.org/10.1101/2025.09.09.675207).
+
+A standalone TARDIS package is forthcoming, thanks to new funding from the National Science Foundation. In the meantime, this repository is intended to hold the most current versions of code for all elements of the TARDIS pipeline.
 
 
 Contents
