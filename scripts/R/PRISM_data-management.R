@@ -1,6 +1,6 @@
 # working with PRISM historical monthlys
 # Assumes local environment 
-# jby 2024.10.03
+# jby 2026.01.23
 
 # starting up ------------------------------------------------------------
 
@@ -12,7 +12,7 @@ library("terra")
 
 library("prism")
 
-prism_set_dl_dir("data") # system-specific; this goes to a directory shared among projects
+prism_set_dl_dir("../data/PRISM") # system-specific; this goes to a directory shared among projects
 
 # set parameters as variables
 taxon <- 53405 # toyon!
@@ -22,15 +22,15 @@ taxon <- 53405 # toyon!
 #-------------------------------------------------------------------------
 # Download the PRISM monthlies, if you haven't already (otherwise, skip)
 
-for(yr in 1895:2023){ # note that years are up to you, 1895 is earliest avialable
+for(yr in 1895:2024){ # note that years are up to you, 1895 is earliest avialable
 
 # yr <- 2024
 
-get_prism_monthlys(type="tmax", mon=1:12, year=yr, keepZip=FALSE)
-get_prism_monthlys(type="tmin", mon=1:12, year=yr, keepZip=FALSE)
-get_prism_monthlys(type="ppt", mon=1:12, year=yr, keepZip=FALSE)
-get_prism_monthlys(type="vpdmax", mon=1:12, year=yr, keepZip=FALSE)
-get_prism_monthlys(type="vpdmin", mon=1:12, year=yr, keepZip=FALSE)
+get_prism_monthlys(type="tmax", mon=1:12, resolution = "4km", year=yr, keepZip=FALSE)
+get_prism_monthlys(type="tmin", mon=1:12, resolution = "4km", year=yr, keepZip=FALSE)
+get_prism_monthlys(type="ppt", mon=1:12, resolution = "4km", year=yr, keepZip=FALSE)
+get_prism_monthlys(type="vpdmax", mon=1:12, resolution = "4km", year=yr, keepZip=FALSE)
+get_prism_monthlys(type="vpdmin", mon=1:12, resolution = "4km", year=yr, keepZip=FALSE)
 
 }
 

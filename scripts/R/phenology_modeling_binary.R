@@ -1,6 +1,6 @@
 # Using BARTs to model flowering activity
 # best run on MAJEL
-# last used/modified jby, 2025.07.09
+# last used/modified jby, 2026.01.26
 
 rm(list=ls())  # Clears memory of all objects -- useful for debugging! But doesn't kill packages.
 
@@ -19,7 +19,7 @@ set.seed(19820604)
 taxon <- 53405 # toyon!
 # Prunus ilicifolia = 57250
 
-flow <- read.csv(paste("output/flowering_freq_climate_", taxon, ".csv", sep="")) %>% filter(!is.na(ppt.y0q1)) %>% mutate(flr = prop_flr == 0) # flowering/not flowering, biologically-informed candidate predictors
+flow <- read.csv(paste("output/flowering_freq_climate_", taxon, ".csv", sep="")) %>% filter(!is.na(ppt.y0q1)) %>% mutate(flr = prop_flr > 0) # flowering/not flowering, biologically-informed candidate predictors
 
 dim(flow)
 glimpse(flow)
@@ -43,9 +43,13 @@ write_rds(flow.varimp, file=paste("output/models/bart.varimp.", taxon, ".rds", s
 # flow.varimp <- read_rds(file=paste("output/BART/bart.varimp.", taxon, ".rds", sep=""))
 
 # generate a better-organized varimp() figure
-var_sel_compare <- flow.varimp$data |> mutate(trees = factor(trees, c(200, 150, 100, 50, 20, 10)), variable = factor(variable, xnames[order(filter(flow.varimp$data, trees==10)$imp, decreasing=TRUE)]))
+var_sel_compare <- flow.varimp$data |> mutate(trees = factor(trees, c(200, 150, 100, 50, 20, 10)))
 
-levels(var_sel_compare$variable) <- c("PPT Y1Q3", "VPDmin Y1Q4", "VPDmax Y0Q1", "Tmin Y1Q4", "PPT Y1Q4", "Tmin Y1Q3", "PPT Y0Q1", "VPDmin Y0Q1", "Tmax Y0Q1", "VPDmin Y1Q3", "VPDmax Y1Q3", "Tmax Y1Q4", "VPDmax Y1Q4", "Tmax Y1Q3", "Tmin Y0Q1")
+pred.fac <- flow.varimp$data %>% group_by(variable) %>% summarise(max = max(imp))
+var_sel_compare$variable <- factor(var_sel_compare$variable, pred.fac[order(-pred.fac$max), ]$variable)
+
+levels(var_sel_compare$variable)
+levels(var_sel_compare$variable) <- c("PPT Y1Q3", "VPDmin Y1Q4", "Tmin Y1Q4", "VPDmax Y0Q1", "PPT Y1Q4", "Tmin Y1Q3", "VPDmin Y1Q3", "PPT Y0Q1", "VPDmin Y0Q1", "VPDmax Y1Q3", "Tmax Y1Q4", "Tmax Y1Q3", "VPDmax Y1Q4", "Tmax Y0Q1", "Tmin Y0Q1")
 
 # colors for this: '#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#08589e'
 
@@ -64,7 +68,7 @@ predsel
 dev.off()
 
 # fill this in based on results of varimp.diag()
-topX <- c("ppt.y1q3", "vpdmin.y1q4", "vpdmax.y0q1", "tmin.y1q4", "ppt.y1q4", "tmin.y1q3")
+topX <- as.character(pred.fac[order(-pred.fac$max), ]$variable[1:6])
 
 
 # STANDARD model with varimp() selection ..................
@@ -74,11 +78,11 @@ invisible(flr.mod$fit$state)
 write_rds(flr.mod, file=paste("output/models/bart.model.", taxon, ".rds", sep="")) # save model
 # flr.mod <- read_rds(paste("output/BART/bart.model.", taxon, ".rds", sep=""))
 
-summary(flr.mod) # AUC reflects classification accuracy, how's that look?
+summary(flr.mod) # AUC reflects classification accuracy, how's that look? 0.73, not actually great, bob
 
-mod_valid <- summary(flr.mod)$data %>% dplyr::select(fitted, observed) %>% mutate(type="Training data", classified=fitted>0.1352385)
+mod_valid <- summary(flr.mod)$data %>% dplyr::select(fitted, observed) %>% mutate(type="Training data", classified=fitted>0.8661725)
 
-rmse(mod_valid$classified, mod_valid$observed) # RMSE = 0.5807869
+rmse(mod_valid$classified, mod_valid$observed) # RMSE = 0.588446
 
 
 p <- partial(flr.mod, topX, trace=FALSE, smooth=5) # visualize partials
@@ -133,7 +137,7 @@ for(part in 1:length(topX)){
 glimpse(partvals)
 
 partvals$predictor <- factor(partvals$predictor, topX)
-levels(partvals$predictor) <- c("PPT Y1Q3", "VPDmin Y1Q4", "VPDmax Y0Q1", "Tmin Y1Q4", "PPT Y1Q4", "Tmin Y1Q3")
+levels(partvals$predictor) <- c("PPT Y1Q3", "VPDmin Y1Q4", "Tmin Y1Q4", "VPDmax Y0Q1", "PPT Y1Q4", "Tmin Y1Q3")
 partvals$predtype <- NA
 partvals$predtype[grepl("PPT", partvals$predictor)] <- "precip"
 partvals$predtype[grepl("Tm", partvals$predictor)] <- "temp"
