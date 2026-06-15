@@ -16,13 +16,13 @@ library("CoordinateCleaner")
 
 #-------------------------------------------------------------------------
 # Pull down iNat observations of target taxon with specific phenology code
-# Joshua tree, e.g.: taxon_id=47785
+# Joshua tree, e.g.: taxnum=47785
 # Toyon: 53405
 # Carnegia gigantea: 54449
 # Prunus ilicifolia: 57250
 # Ericameria nauseosa: 57934
 
-taxnum <- 53405
+taxnum <- 62292 # Asclepias speciosa
 
 # per https://forum.inaturalist.org/t/how-to-use-inaturalists-search-urls-wiki-part-2-of-2/18792
 # term id: 12 for Plant Phenology then term_id_value: 13 =Flowering, 14 =Fruiting, 15 =Flower Budding, 21 =No evidence of flowering
@@ -37,7 +37,7 @@ glimpse(test)
 
 # ACTUALLY RUN THE THING
 # years to read in for the loop
-years <- 2020
+years <- 2008:2025
 verbose <- TRUE # read out progress
 max_loc_uncertainty <- 2000 # in meters
 write.out <- TRUE
