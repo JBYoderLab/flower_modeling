@@ -1,6 +1,6 @@
 # Scraping phenology-annotated iNat observations
 # Assumes local environment
-# jby 2026.06.08
+# jby 2026.06.29
 
 # starting up ------------------------------------------------------------
 
@@ -30,7 +30,7 @@ taxnum <- 62292 # Asclepias speciosa
 
 
 # trial run, to make sure it works as expected
-test <- get_inat_obs(quality="research", taxon_id=taxnum, annotation=c(12,13), year=2021, maxresults=1e4) |> filter(captive_cultivated=="false", positional_accuracy<1000)
+test <- get_inat_obs(quality="research", taxnum_id=taxnum, annotation=c(12,13), year=2021, maxresults=1e4) |> filter(captive_cultivated=="false", positional_accuracy<1000)
 
 glimpse(test)
 
@@ -49,13 +49,13 @@ names(inat_pheno_data) <- c("scientific_name", "latitude", "longitude", "url", "
 # LOOP over years, downloading by phenophase
 for(y in years){
 
-  bud.y <- try(rinat::get_inat_obs(quality="research", taxon_id=taxnum, annotation=c(12, 15), year=y, maxresults=1e4))
+  bud.y <- try(rinat::get_inat_obs(quality="research", taxnum_id=taxnum, annotation=c(12, 15), year=y, maxresults=1e4))
   Sys.sleep(5) # throttling under the API limit, maybe?
-  flo.y <- try(rinat::get_inat_obs(quality="research", taxon_id=taxnum, annotation=c(12, 13), year=y, maxresults=1e4))
+  flo.y <- try(rinat::get_inat_obs(quality="research", taxnum_id=taxnum, annotation=c(12, 13), year=y, maxresults=1e4))
   Sys.sleep(5)
-  fru.y <- try(rinat::get_inat_obs(quality="research", taxon_id=taxnum, annotation=c(12, 14), year=y, maxresults=1e4))
+  fru.y <- try(rinat::get_inat_obs(quality="research", taxnum_id=taxnum, annotation=c(12, 14), year=y, maxresults=1e4))
   Sys.sleep(5)
-  non.y <- try(rinat::get_inat_obs(quality="research", taxon_id=taxnum, annotation=c(12, 21), year=y, maxresults=1e4))
+  non.y <- try(rinat::get_inat_obs(quality="research", taxnum_id=taxnum, annotation=c(12, 21), year=y, maxresults=1e4))
   Sys.sleep(5)
 
 
@@ -90,7 +90,7 @@ table(inat_pheno_data$year, inat_pheno_data$phenology)
 #-------------------------------------------------------------------------
 # Data cleaning
 
-# inat_pheno_data <- read.csv(paste("data/inat_phenology_data_", taxon, ".csv", sep=""), h=TRUE)
+# inat_pheno_data <- read.csv(paste("data/inat_phenology_data_", taxnum, ".csv", sep=""), h=TRUE)
 to_clean <- inat_pheno_data %>% filter(!is.na(latitude))
 
 glimpse(to_clean)
@@ -118,13 +118,13 @@ ggplot() + geom_sf(data=ne_countries(continent = "north america", returnclass = 
   geom_point(data=cleaned, aes(x=longitude, y=latitude)) +
   coord_sf(xlim = to_clean_ext[1:2], ylim = to_clean_ext[3:4], expand = TRUE)
 
-write.table(cleaned, paste("data/inat_phenology_data_", taxon, "_cleaned.csv", sep=""), sep=",", col.names=TRUE, row.names=FALSE, quote=FALSE)
+write.table(cleaned, paste("data/inat_phenology_data_", taxnum, "_cleaned.csv", sep=""), sep=",", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
 #-------------------------------------------------------------------------
 # visualize phenophase records by year and location
 
 # if it's not already in memory ...
-cleaned <- read.csv(paste("data/inat_phenology_data_", taxon, "_cleaned.csv", sep=""), h=TRUE)
+cleaned <- read.csv(paste("data/inat_phenology_data_", taxnum, "_cleaned.csv", sep=""), h=TRUE)
 table(cleaned$year) # oops, watch out for missing years in the early going
 
 # summary for image
@@ -139,7 +139,7 @@ cor.test(~Pflr+as.numeric(year),data=flr.prp) # dummy-check for a trend
 if(!dir.exists("output/figures")) dir.create("output/figures", recursive=TRUE) # make sure there's a folder to write to!
 
 # generate and write out a figure summarizing records by year and phenophase
-{cairo_pdf(paste("output/figures/iNat_obs_raw_", taxon, ".pdf", sep=""), width=9, height=4.5)
+{cairo_pdf(paste("output/figures/iNat_obs_raw_", taxnum, ".pdf", sep=""), width=9, height=4.5)
 
 ggplot() +
 
